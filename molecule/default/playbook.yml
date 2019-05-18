@@ -1,0 +1,6 @@
+---
+- name: "victorock.autogen"
+  hosts: localhost
+  connection: local
+  roles:
+    - victorock.autogen

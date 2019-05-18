@@ -1,0 +1,38 @@
+---
+language: python
+
+env:
+  global:
+    - ROLE_NAME: "autogen"
+    - ROLE_OWNER: "victorock"
+    - ROLE_FULL_NAME: "${ROLE_OWNER}.${ROLE_NAME}"
+    - ROLE_REPO_NAME: "ansible-role-autogen"
+    - ROLE_REPO_URL: "https://github.com/${ROLE_OWNER}/${ROLE_REPO_NAME}"
+    - ROLE_VERSION: "${TRAVIS_BRANCH}"
+    - ROLE_BUILD_DIR: "${TRAVIS_BUILD_DIR}"
+    - ROLE_BUILD: "${TRAVIS_BUILD_NUMBER}"
+  matrix:
+    - MOLECULE_DISTRO: centos7
+    - MOLECULE_DISTRO: fedora29
+    - MOLECULE_DISTRO: ubuntu1804
+    - MOLECULE_DISTRO: debian9
+
+install:
+  # Install test dependencies.
+  - "pip install --upgrade pip setuptools pip-tools"
+  - "pip install yamllint molecule ansible==${ROLE_VERSION} jmespath"
+
+before_script:
+  # Use actual Ansible Galaxy role name for the project directory.
+  - "cd ../"
+  - "mv ${ROLE_REPO_NAME} ${ROLE_FULL_NAME}"
+  - "cd ${ROLE_FULL_NAME}"
+
+script:
+  # Run tests.
+  - "find . -type f -iname '.yaml' | xargs yamllint"
+  - "find . -type f -iname '.yml' | xargs yamllint"
+  - "molecule test"
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

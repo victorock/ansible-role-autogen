@@ -1,0 +1,37 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: "autogen"
+  author: "Victor da Costa"
+  description: "Autogenerates wrapped Playbooks and Tasks from Ansible Modules."
+  license: "GPL-3.0-or-later"
+  min_ansible_version: 2.7.10
+  platforms:
+    - name: ALL
+      versions:
+        - all
+  galaxy_tags:
+    - "content"
+    - "cloud"
+    - "clustering"
+    - "commands"
+    - "crypto"
+    - "database"
+    - "files"
+    - "identity"
+    - "import_tower"
+    - "inventory"
+    - "messaging"
+    - "monitoring"
+    - "net_tools"
+    - "network"
+    - "notification"
+    - "packaging"
+    - "remote_management"
+    - "source_control"
+    - "storage"
+    - "system"
+    - "utilities"
+    - "web_infrastructure"
+    - "windows"
