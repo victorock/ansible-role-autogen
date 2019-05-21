@@ -1,58 +1,60 @@
 ---
 - name: "Get plugin facts"
-  r_plugin_facts:
+  plugin_facts:
     name: "{{ autogen_plugin_name | default(omit, True) }}"
-    type: "{{ pautogen_plugin_type | default(omit, True) }}"
+    type: "{{ autogen_plugin_type | default(omit, True) }}"
   register: r_plugin_facts
 
 # due the amount of namespaces, 'loop' is veeeeery slow
-# TODO: find a more efficient way to loop over
+# TODO: create a `filetree` module who accepts `lookup filetree`
 - name: "Create playbooks folder structure"
   vars:
-    matches: "{{ r_plugin_facts.plugin | selectattr('namespace', 'match', autogen_plugin_namespace) }}"
+    matches: "{{ r_plugin_facts.plugin | dict2items | selectattr('value.namespace', 'search', autogen_plugin_namespace) | list }}"
+    namespaces: "{{ matches | map(attribute='value.namespace') | sort | unique | list }}"
   file:
+    state: "directory"
     path: "{{ autogen_path }}/playbooks/{{ namespace }}"
-    state: "directory"
-  loop: "{{ matches | map(attribute='namespace') | unique | list }}"
+  loop: "{{ namespaces }}"
   loop_control:
     loop_var: namespace
     label: "{{ namespace }}"
 
 # due the amount of namespaces, 'loop' is veeeeery slow
-# TODO: find a more efficient way to loop over
-- name: "Create tasks folder structure"
-  vars:
-    matches: "{{ r_plugin_facts.plugin | selectattr('namespace', 'match', autogen_plugin_namespace) }}"
-  file:
-    path: "{{ autogen_path }}/tasks/{{ namespace }}"
-    state: "directory"
-  loop: "{{ matches | map(attribute='namespace') | unique | list }}"
-  loop_control:
-    loop_var: namespace
-    label: "{{ namespace }}"
-
-# due the amount of namespaces, 'loop' is veeeeery slow
-# TODO: find a more efficient way to loop over
+# TODO: create a `templates` module which accepts aggregated input.
 - name: "Generate playbook content"
   vars:
-    matches: "{{ r_plugin_facts.plugin | selectattr('namespace', 'match', autogen_plugin_namespace) }}"
+    matches: "{{ r_plugin_facts.plugin | dict2items | selectattr('value.namespace', 'search', autogen_plugin_namespace) | list }}"
   template:
     src: "playbook.j2"
     dest: "{{ autogen_path }}/playbooks/{{ plugin.value.namespace }}/{{ plugin.key }}.yaml"
-  loop: "{{ matches | dict2items }}"
+  loop: "{{ matches }}"
   loop_control:
     loop_var: plugin
     label: "{{ plugin.key }}"
 
 # due the amount of namespaces, 'loop' is veeeeery slow
+# TODO: create a `filetree` module who accepts `lookup filetree`
+- name: "Create tasks folder structure"
+  vars:
+    matches: "{{ r_plugin_facts.plugin | dict2items | selectattr('value.namespace', 'search', autogen_plugin_namespace) | list }}"
+    namespaces: "{{ matches | map(attribute='value.namespace') | sort | unique | list }}"
+  file:
+    state: "directory"
+    path: "{{ autogen_path }}/tasks/{{ namespace }}"
+  loop: "{{ namespaces }}"
+  loop_control:
+    loop_var: namespace
+    label: "{{ namespace }}"
+
+# due the amount of namespaces, 'loop' is veeeeery slow
 # TODO: find a more efficient way to loop over
 - name: "Generate tasks content"
   vars:
-    matches: "{{ r_plugin_facts.plugin | selectattr('namespace', 'match', autogen_plugin_namespace) }}"
+    matches: "{{ r_plugin_facts.plugin | dict2items | selectattr('value.namespace', 'search', autogen_plugin_namespace) | list }}"
   template:
     src: "task.j2"
     dest: "{{ autogen_path }}/tasks/{{ plugin.value.namespace }}/{{ plugin.key }}.yaml"
-  loop: "{{ matches | dict2items }}"
+  loop: "{{ matches }}"
   loop_control:
     loop_var: plugin
     label: "{{ plugin.key }}"

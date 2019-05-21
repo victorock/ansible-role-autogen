@@ -9,11 +9,11 @@
     scm_url: "{{ autogen_repo_url }}"
     tower_verify_ssl: "false"
 
-- name: "Create job template"
+- name: "Create job templates"
   tower_job_template:
-    name: "module_{{ (playbook.path | basename).split('.')[0] }}"
+    name: "module_{{ '{{' }} (playbook.path | basename).split('.')[0] {{ '}}' }}"
     project: "{{ autogen }}: {{ autogen_repo_branch }}"
-    playbook: "{{ autogen_path }}/playbooks/{{ playbook.path }}"
+    playbook: "{{ autogen_path }}/playbooks/{{ '{{' }} playbook.path {{ '}}' }}"
     job_type: "run"
     ask_credential: "true"
     ask_diff_mode: "true"
@@ -26,8 +26,7 @@
     ask_verbosity: "true"
     tower_verify_ssl: "false"
   when: playbook.state == 'file'
-  register: create_job_template
-  loop: "{{ q('filetree', autogen_path + '/playbooks/') }}"
+  loop: "{{ '{{' }} q('filetree', autogen_path + '/playbooks/') {{ '}}' }}"
   loop_control:
     loop_var: playbook
-    label: "{{ playbook.path }}"
+    label: "{{ '{{' }} playbook.path {{ '}}' }}"
