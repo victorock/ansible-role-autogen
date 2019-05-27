@@ -27,8 +27,6 @@ None
 Example
 ----------------
 
-Reference: [victorock.playground](https://github.com/victorock/ansible-playground/tree/master/build/main.yaml)
-
 ```YAML
 - name: "Generate Playbooks and Tasks"
   hosts: all
