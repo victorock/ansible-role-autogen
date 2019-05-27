@@ -15,6 +15,7 @@ env:
     - ROLE_BUILD_DIR: "${TRAVIS_BUILD_DIR}"
     - ROLE_BUILD: "${TRAVIS_BUILD_NUMBER}"
     - ROLE_NAMESPACE: ".*"
+
   matrix:
     - MOLECULE_DISTRO: centos7
     - MOLECULE_DISTRO: fedora29
@@ -23,14 +24,14 @@ env:
 
 install:
   # Install test dependencies.
-  - "pip install --upgrade pip setuptools pip-tools"
-  - "pip install docker yamllint molecule ansible jmespath"
+  - pip install --upgrade pip setuptools pip-tools
+  - pip install docker yamllint molecule ansible jmespath
 
 before_script:
   # Use actual Ansible Galaxy role name for the project directory.
-  - "cd ../
-  - "mv ${ROLE_REPO_NAME} ${ROLE_FULL_NAME}"
-  - "cd ${ROLE_FULL_NAME}"
+  - cd ../
+  - mv ${ROLE_REPO_NAME} ${ROLE_FULL_NAME}
+  - cd ${ROLE_FULL_NAME}
 
 script:
   # Run tests.
